@@ -87,10 +87,10 @@ class Invoices extends Admin_Controller
             $this->layout->set(
                 [
                     'invoices_archive' => $invoice_array,
-                ]);
+                ]
+            );
             $this->layout->buffer('content', 'invoices/archive');
             $this->layout->render();
-
         } else {
             foreach (glob(UPLOADS_ARCHIVE_FOLDER . '*.pdf') as $file) {
                 array_push($invoice_array, $file);
@@ -100,7 +100,8 @@ class Invoices extends Admin_Controller
             $this->layout->set(
                 [
                     'invoices_archive' => $invoice_array,
-                ]);
+                ]
+            );
             $this->layout->buffer('content', 'invoices/archive');
             $this->layout->render();
         }
@@ -269,7 +270,9 @@ class Invoices extends Admin_Controller
             $this->mdl_invoices->mark_sent($invoice_id);
         }
 
-        generate_invoice_pdf($invoice_id, $stream, $invoice_template, null);
+        $invoice_data = $this->mdl_invoices->get_by_id($invoice_id);
+
+        generate_invoice_pdf($invoice_id, $stream, $invoice_template, null, $invoice_data);
     }
 
     /**
@@ -338,5 +341,4 @@ class Invoices extends Admin_Controller
             $this->mdl_invoice_amounts->calculate($invoice_id->invoice_id);
         }
     }
-
 }

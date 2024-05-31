@@ -19,7 +19,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @param null $is_guest
  * @return string
  */
-function generate_invoice_pdf($invoice_id, $stream = true, $invoice_template = null, $is_guest = null)
+function generate_invoice_pdf($invoice_id, $stream = true, $invoice_template = null, $is_guest = null, $invoice_data = null)
 {
     $CI = &get_instance();
 
@@ -99,11 +99,23 @@ function generate_invoice_pdf($invoice_id, $stream = true, $invoice_template = n
         'custom_fields' => $custom_fields,
     );
 
+    error_reporting(0);
+
     $html = $CI->load->view('invoice_templates/pdf/' . $invoice_template, $data, true);
 
     $CI->load->helper('mpdf');
-    return pdf_create($html, trans('invoice') . '_' . str_replace(array('\\', '/'), '_', $invoice->invoice_number),
-        $stream, $invoice->invoice_password, true, $is_guest, $include_zugferd, $associatedFiles);
+
+    return pdf_create(
+        $html,
+        trans('invoice') . '_' . str_replace(array('\\', '/'), '_', $invoice->invoice_number),
+        $stream,
+        $invoice->invoice_password,
+        true,
+        $is_guest,
+        $include_zugferd,
+        $associatedFiles,
+        $invoice_data
+    );
 }
 
 function generate_invoice_sumex($invoice_id, $stream = true, $client = false)
@@ -256,5 +268,11 @@ function generate_quote_pdf($quote_id, $stream = true, $quote_template = null)
 
     $CI->load->helper('mpdf');
 
-    return pdf_create($html, trans('quote') . '_' . str_replace(array('\\', '/'), '_', $quote->quote_number), $stream, $quote->quote_password);
+    return pdf_create(
+        $html,
+        trans('quote') . '_' . str_replace(array('\\', '/'), '_',
+        $quote->quote_number),
+        $stream,
+        $quote->quote_password
+    );
 }
